@@ -1,6 +1,6 @@
 import json
 import os
-from src.imageProcessing import is_background_uniform, remove_background
+from imageProcessing import is_background_uniform, remove_background
 from rabbitMQ import create_rabbitmq_client
 from s3Storage import create_s3_client, download_image, replace_image
 
