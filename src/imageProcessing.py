@@ -38,7 +38,7 @@ def is_background_uniform(image_data, color_tolerance=10, threshold=0.20):
 def remove_background(image_data):
     """
     Remove the background from an image.
-    :param image_data: Image data as bytes
+    :param image_data: Image data
     :rtype: bytes
     :return: Processed image data
     """

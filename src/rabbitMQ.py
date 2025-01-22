@@ -1,9 +1,11 @@
 import logging
 import os
 import pika
+from pika.exceptions import AMQPConnectionError
 import time
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
+
 
 class RabbitMQClient:
 
@@ -16,7 +18,6 @@ class RabbitMQClient:
         self.connection = None
         self.channel = None
         self.connection_with_retries()
-
 
     def connection_with_retries(self, max_retries=10, initial_delay=5):
         """
@@ -42,13 +43,12 @@ class RabbitMQClient:
                 logging.info("Connected to RabbitMQ successfully!")
                 return
 
-            except pika.exceptions.AMQPConnectionError as e:
+            except AMQPConnectionError as e:
                 logging.error(f"RabbitMQ connection failed: {e}. Retrying in {initial_delay} seconds...")
                 time.sleep(initial_delay)
                 retries += 1
 
         raise Exception("Could not connect to RabbitMQ after multiple retries.")
-
 
     def ensure_connection(self):
         """
@@ -58,17 +58,15 @@ class RabbitMQClient:
             logging.info("RabbitMQ connection lost. Reconnecting...")
             self.connection_with_retries()
 
-
     def consume_messages(self, queue, callback):
-            """
-            Consume messages from a RabbitMQ queue.
-            """
-            self.ensure_connection()
-            self.channel.queue_declare(queue=queue, durable=True) # Ensure that the queue exists
-            self.channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=True)
-            logging.info(f"Waiting for messages in {queue}...")
-            self.channel.start_consuming()
-
+        """
+        Consume messages from a RabbitMQ queue.
+        """
+        self.ensure_connection()
+        self.channel.queue_declare(queue=queue, durable=True) # Ensure that the queue exists
+        self.channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=False)
+        logging.info(f"Waiting for messages in {queue}...")
+        self.channel.start_consuming()
 
     def close_connection(self):
         """

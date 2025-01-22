@@ -14,7 +14,7 @@ rabbitmq_client = RabbitMQClient()
 def process_image(image_data):
     """
     Process an image by removing the background if it is uniform.
-    :param image_data: Image data as bytes
+    :param image_data: Image data
     :rtype: bytes
     :return: Processed image data
     """
@@ -29,7 +29,7 @@ def callback(ch, method, _, body):
     Callback function triggered when a message is received.
     :param ch: Channel
     :param method: Method frame
-    :param properties: Properties
+    :param _: Properties
     :param body: Message body
     """
     try:
