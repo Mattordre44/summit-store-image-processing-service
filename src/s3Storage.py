@@ -4,6 +4,7 @@ import os
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
+
 class S3Client:
 
     def __init__(self):
@@ -20,7 +21,6 @@ class S3Client:
             aws_secret_access_key=s3_secret_key,
         )
 
-
     def download_image(self, file_name, bucket_name):
         """
         Download an image from S3.
@@ -32,7 +32,6 @@ class S3Client:
         logging.info(f"Downloading image {file_name} from bucket {bucket_name}")
         response = self.client.get_object(Bucket=bucket_name, Key=file_name)
         return response["Body"].read()
-
 
     def replace_image(self, file_name, bucket_name, image_data):
         """
