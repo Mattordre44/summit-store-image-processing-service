@@ -1,0 +1,48 @@
+services:
+  minio:
+    image: 'minio/minio:latest'
+    container_name: 'summit-store-image-processing-main-storage'
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=password
+    ports:
+      - '9000:9000' # MinIO API
+      - '9001:9001' # MinIO Console
+    volumes:
+      - 'minio-data:/data'
+    networks:
+      - 'app-network'
+    command: 'minio server /data --console-address ":9001"'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live' ]
+      interval: 2s
+      start_period: 5s
+    restart: always
+  rabbitmq:
+    image: 'rabbitmq:4.0-management'
+    container_name: 'summit-store-image-processing-main-queue'
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    ports:
+      - '5672:5672' # AMQP Port
+      - '15672:15672' # Web UI
+    volumes:
+        - 'rabbitmq-data:/var/lib/rabbitmq'
+    networks:
+      - 'app-network'
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 2s
+      start_period: 5s
+    restart: always
+
+volumes:
+  minio-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
